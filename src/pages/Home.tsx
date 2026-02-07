@@ -1,19 +1,19 @@
 import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 const VIDEO_SOURCES = [
   'https://mojli.s3.us-east-2.amazonaws.com/Mojli+Website+upscaled+(12mb).webm',
 ];
 
 const HEADLINES = [
-  { id: 1, title: 'Headline', subtitle: 'Breaking disaster news updates', source: 'Reuters' },
-  { id: 2, title: 'Headline', subtitle: 'Emergency response coverage', source: 'AP News' },
-  { id: 3, title: 'Headline', subtitle: 'Global relief efforts underway', source: 'BBC World' },
-  { id: 4, title: 'Headline', subtitle: 'Climate event tracking report', source: 'Al Jazeera' },
-  { id: 5, title: 'Headline', subtitle: 'Aid distribution developments', source: 'CNN' },
-  { id: 6, title: 'Headline', subtitle: 'Recovery operations in progress', source: 'The Guardian' },
+  { id: 1, title: 'Earthquake Response', subtitle: 'Breaking disaster news updates', source: 'Reuters', slug: 'earthquake-response' },
+  { id: 2, title: 'Flood Warning Issued', subtitle: 'Emergency response coverage', source: 'AP News', slug: 'flood-warning' },
+  { id: 3, title: 'Global Relief Efforts', subtitle: 'Global relief efforts underway', source: 'BBC World', slug: 'global-relief' },
+  { id: 4, title: 'Climate Event Tracking', subtitle: 'Climate event tracking report', source: 'Al Jazeera', slug: 'climate-tracking' },
+  { id: 5, title: 'Aid Distribution', subtitle: 'Aid distribution developments', source: 'CNN', slug: 'aid-distribution' },
+  { id: 6, title: 'Recovery Operations', subtitle: 'Recovery operations in progress', source: 'The Guardian', slug: 'recovery-ops' },
 ];
 
 const ITEMS_PER_VIEW = 3;
@@ -36,11 +36,10 @@ export default function Home() {
     }
   }, []);
 
-  // Auto-rotate carousel
   useEffect(() => {
     const timer = setInterval(() => {
       setActivePage((prev) => (prev + 1) % TOTAL_PAGES);
-    }, 4000);
+    }, 8000);
     return () => clearInterval(timer);
   }, []);
 
@@ -50,23 +49,23 @@ export default function Home() {
   );
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative h-screen overflow-hidden">
       {/* Full-page video background */}
       <video
         ref={videoRef}
-        className="fixed inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover"
         muted
         playsInline
         preload="auto"
         style={{ pointerEvents: 'none' }}
       />
-      <div className="fixed inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-black/60" />
 
       {/* Content layer */}
-      <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Hero — top two-thirds */}
+      <div className="relative z-10 h-full flex flex-col">
+        {/* Hero — centered in top portion */}
         <div className="flex-1 flex items-center justify-center px-4">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="text-center">
             <motion.h1
               initial="hidden"
               animate="visible"
@@ -74,16 +73,24 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="font-heading text-5xl sm:text-6xl md:text-7xl font-light text-white tracking-tight leading-none"
             >
-              GLOBAL DISASTER
-              <br />
-              INSIGHT
+              HARBOR
             </motion.h1>
+
+            <motion.p
+              initial="hidden"
+              animate="visible"
+              variants={fade}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="mt-4 text-sm tracking-[0.2em] uppercase text-white/50"
+            >
+              Global Disaster Insight
+            </motion.p>
 
             <motion.div
               initial="hidden"
               animate="visible"
               variants={fade}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6"
             >
               <Link
@@ -100,32 +107,18 @@ export default function Home() {
                 DISASTER MAP
               </Link>
             </motion.div>
-
-            <motion.p
-              initial="hidden"
-              animate="visible"
-              variants={fade}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              className="mt-8 text-xs tracking-[0.15em] uppercase text-white/40"
-            >
-              Real-time tracking. No account required.
-            </motion.p>
           </div>
         </div>
 
-        {/* News carousel — bottom third, overlaying video */}
-        <div className="px-4 sm:px-8 pb-12 pt-8">
+        {/* News carousel — bottom third */}
+        <div className="px-4 sm:px-8 pb-10 pt-4">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-end justify-between mb-6">
+            <div className="flex items-end justify-between mb-5">
               <div>
-                <h2 className="font-heading text-2xl sm:text-3xl font-light text-white tracking-tight mb-1">
+                <h2 className="font-heading text-xl sm:text-2xl font-light text-white tracking-tight mb-1">
                   Latest Headlines
                 </h2>
-                <p className="text-sm text-white/50">
-                  Disaster news from around the world
-                </p>
               </div>
-              {/* Page indicators */}
               <div className="flex gap-2">
                 {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
                   <button
@@ -149,18 +142,19 @@ export default function Home() {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
               >
                 {currentItems.map((item) => (
-                  <div
+                  <Link
                     key={item.id}
-                    className="h-52 border border-white/15 bg-black/40 backdrop-blur-sm flex flex-col justify-end p-6 hover:bg-white/10 transition-colors cursor-pointer group"
+                    to={`/headlines/${item.slug}`}
+                    className="h-48 border border-white/15 bg-black/40 backdrop-blur-sm flex flex-col justify-end p-6 hover:bg-white/10 transition-colors cursor-pointer group"
                   >
                     <span className="text-[10px] tracking-[0.2em] uppercase text-white/35 mb-2">
                       {item.source}
                     </span>
-                    <h3 className="font-heading text-xl font-semibold text-white mb-1 group-hover:text-white/90">
+                    <h3 className="font-heading text-lg font-semibold text-white mb-1 group-hover:text-white/90">
                       {item.title}
                     </h3>
                     <p className="text-sm text-white/50">{item.subtitle}</p>
-                  </div>
+                  </Link>
                 ))}
               </motion.div>
             </AnimatePresence>
