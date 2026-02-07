@@ -1,11 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRef, useEffect, useState } from 'react';
-
-const VIDEO_SOURCES = [
-  'https://mojli.s3.us-east-2.amazonaws.com/Mojli+Website+upscaled+(12mb).webm',
-];
+import { useState, useEffect } from 'react';
 
 const HEADLINES = [
   { id: 1, title: 'Earthquake Response', subtitle: 'Breaking disaster news updates', source: 'Reuters', slug: 'earthquake-response' },
@@ -22,19 +18,7 @@ const TOTAL_PAGES = Math.ceil(HEADLINES.length / ITEMS_PER_VIEW);
 const fade = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 export default function Home() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [activePage, setActivePage] = useState(0);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.src = VIDEO_SOURCES[0];
-      videoRef.current.load();
-      videoRef.current.loop = true;
-      videoRef.current.muted = true;
-      const p = videoRef.current.play();
-      if (p) p.catch(() => {});
-    }
-  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -49,22 +33,14 @@ export default function Home() {
   );
 
   return (
-    <div className="relative h-screen overflow-hidden">
-      {/* Full-page video background */}
-      <video
-        ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover"
-        muted
-        playsInline
-        preload="auto"
-        style={{ pointerEvents: 'none' }}
-      />
-      <div className="absolute inset-0 bg-black/60" />
+    <div className="relative h-screen overflow-hidden bg-black">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, hsl(220,20%,8%) 0%, hsl(240,15%,12%) 50%, hsl(220,18%,10%) 100%)' }} />
 
       {/* Content layer */}
       <div className="relative z-10 h-full flex flex-col">
-        {/* Hero — centered in top portion */}
-        <div className="flex-1 flex items-center justify-center px-4">
+        {/* Hero — vertically centered with slight upward offset for visual balance */}
+        <div className="flex-1 flex items-center justify-center px-4 pb-16">
           <div className="text-center">
             <motion.h1
               initial="hidden"
@@ -114,11 +90,9 @@ export default function Home() {
         <div className="px-4 sm:px-8 pb-10 pt-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-end justify-between mb-5">
-              <div>
-                <h2 className="font-heading text-xl sm:text-2xl font-light text-white tracking-tight mb-1">
-                  Latest Headlines
-                </h2>
-              </div>
+              <h2 className="font-heading text-xl sm:text-2xl font-light text-white tracking-tight">
+                Latest Headlines
+              </h2>
               <div className="flex gap-2">
                 {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
                   <button
@@ -145,7 +119,7 @@ export default function Home() {
                   <Link
                     key={item.id}
                     to={`/headlines/${item.slug}`}
-                    className="h-48 border border-white/15 bg-black/40 backdrop-blur-sm flex flex-col justify-end p-6 hover:bg-white/10 transition-colors cursor-pointer group"
+                    className="h-48 border border-white/15 bg-white/5 backdrop-blur-sm flex flex-col justify-end p-6 hover:bg-white/10 transition-colors cursor-pointer group"
                   >
                     <span className="text-[10px] tracking-[0.2em] uppercase text-white/35 mb-2">
                       {item.source}
@@ -161,19 +135,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      <style>{`
-        video::-webkit-media-controls,
-        video::-webkit-media-controls-panel,
-        video::-webkit-media-controls-play-button,
-        video::-webkit-media-controls-start-playback-button,
-        video::-webkit-media-controls-enclosure {
-          display: none !important;
-          -webkit-appearance: none !important;
-          opacity: 0 !important;
-          pointer-events: none !important;
-        }
-      `}</style>
     </div>
   );
 }
