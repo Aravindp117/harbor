@@ -94,7 +94,7 @@ export default function DisasterNews() {
       setAlertsLoading(true);
       const data = await fetchAlertsAPI();
       // Deduplicate alerts by title
-      const raw: AlertData[] = data.alerts || [];
+      const raw = (data.alerts || []) as AlertData[];
       setAlerts(deduplicateByTitle(raw));
     } catch {
       setAlerts([]);
