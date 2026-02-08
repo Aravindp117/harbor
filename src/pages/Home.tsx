@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, ChevronLeft, ChevronRight, Menu, X, ChevronDown } from 'lucide-react';
+import { MapPin, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeroVideoCarousel } from '@/components/HeroVideoCarousel';
 import { useState, useRef, useCallback } from 'react';
@@ -13,70 +13,17 @@ const HEADLINES = [
   { id: 6, title: 'Recovery Operations', subtitle: 'Recovery operations in progress', source: 'The Guardian', slug: 'recovery-ops' },
 ];
 
-const SIDEBAR_SECTIONS = [
-  {
-    label: 'Home',
-    children: [
-      { to: '/', label: 'Overview' },
-    ],
-  },
-  {
-    label: 'Explore',
-    children: [
-      { to: '/map', label: 'Disaster Map' },
-      { to: '/trends', label: 'Trends' },
-      { to: '/resources', label: 'Aid Resources' },
-      { to: '/ai', label: 'AI Assistant' },
-      { to: '/about', label: 'About' },
-    ],
-  },
+const SIDEBAR_LINKS = [
+  { to: '/', label: 'Home' },
+  { to: '/map', label: 'Disaster Map' },
+  { to: '/trends', label: 'Trends' },
+  { to: '/resources', label: 'Aid Resources' },
+  { to: '/about', label: 'Our Mission' },
 ];
 
 const VIDEOS_PER_HEADLINE = 2;
 
 const fade = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
-
-function SidebarSection({ section, onNavigate }: { section: typeof SIDEBAR_SECTIONS[number]; onNavigate: () => void }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div>
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3 font-heading text-sm font-semibold tracking-[0.15em] uppercase text-white/70 hover:text-white transition-colors"
-      >
-        {section.label}
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.25 }}>
-          <ChevronDown className="h-4 w-4" />
-        </motion.span>
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            <div className="ml-4 border-l border-white/10 pl-4 py-1 space-y-1">
-              {section.children.map((child) => (
-                <Link
-                  key={child.to}
-                  to={child.to}
-                  onClick={onNavigate}
-                  className="block py-2.5 px-3 font-heading text-sm tracking-wide text-white/50 hover:text-white hover:bg-white/5 transition-colors"
-                >
-                  {child.label}
-                </Link>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
 export default function Home() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -264,9 +211,16 @@ export default function Home() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="flex-1 p-4 space-y-2">
-                {SIDEBAR_SECTIONS.map((section) => (
-                  <SidebarSection key={section.label} section={section} onNavigate={() => setSidebarOpen(false)} />
+              <nav className="flex-1 p-4 space-y-1">
+                {SIDEBAR_LINKS.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setSidebarOpen(false)}
+                    className="block py-3.5 px-4 font-heading text-sm font-semibold tracking-[0.15em] uppercase text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
                 ))}
               </nav>
             </motion.div>
