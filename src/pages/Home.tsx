@@ -16,7 +16,7 @@ const HEADLINES = [
 const SIDEBAR_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/map', label: 'Disaster Map' },
-  { to: '/trends', label: 'Trends' },
+  { to: '/trends', label: 'News' },
   { to: '/resources', label: 'Aid Resources' },
   { to: '/about', label: 'Our Mission' },
 ];
@@ -102,9 +102,11 @@ export default function Home() {
 
         {/* Carousel — 3D rotating cards */}
         <div className="pb-12 pt-2 px-4">
-          <h2 className="font-heading text-xl sm:text-2xl font-light text-white tracking-tight text-center mb-8">
-            Latest Headlines
-          </h2>
+          <Link to="/trends" className="block">
+            <h2 className="font-heading text-xl sm:text-2xl font-light text-white tracking-tight text-center mb-8 hover:text-white/70 transition-colors">
+              Latest Headlines
+            </h2>
+          </Link>
 
           <div className="relative h-56 max-w-4xl mx-auto">
             <AnimatePresence mode="popLayout">
