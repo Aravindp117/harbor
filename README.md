@@ -1,73 +1,47 @@
-# Welcome to your Lovable project
+# Harbor
 
-## Project info
+Global disaster intelligence platform — understand disasters, find help faster.
 
-**URL**: https://lovable.dev/projects/1169db3a-30f3-49bc-bd0b-9cda42ae0ebe
+## Tech Stack
 
-## How can I edit this code?
+- **Frontend**: React 18 + TypeScript + Vite, Tailwind CSS, Shadcn/ui
+- **Backend**: Node.js + Fastify (3 subsystems: Hazards, Risk, AI/News/Aid)
+- **Map**: Mapbox GL (3D globe with auto-rotate)
+- **AI**: Google Gemini for chat, Featherless for preprocessing/fallback
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/1169db3a-30f3-49bc-bd0b-9cda42ae0ebe) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Getting Started
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Install dependencies
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the frontend dev server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The frontend runs on `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+For the backend, see [Backend/README.md](Backend/README.md).
 
-**Use GitHub Codespaces**
+## Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- `src/pages/` — Page components (Home, DisasterMap, News, Trends, AidResources, About)
+- `src/components/` — Reusable UI components
+- `src/lib/` — API clients, utilities
+- `Backend/` — Fastify API server (3 subsystems)
 
-## What technologies are used for this project?
+## Environment Variables
 
-This project is built with:
+Create a `.env` file in the project root:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+VITE_SUPABASE_PROJECT_ID=...
+VITE_SUPABASE_PUBLISHABLE_KEY=...
+VITE_SUPABASE_URL=...
+VITE_MAPBOX_TOKEN=...
+VITE_GEMINI_API_KEY=...
+```
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/1169db3a-30f3-49bc-bd0b-9cda42ae0ebe) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT

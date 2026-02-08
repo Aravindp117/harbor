@@ -5,42 +5,39 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const AI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is not configured");
     }
 
     const { systemPrompt, messages } = await req.json();
 
-    const apiMessages = [
-      { role: "system", content: systemPrompt },
-      ...messages.map((m: { role: string; content: string }) => ({
-        role: m.role,
-        content: m.content,
-      })),
-    ];
+    const contents = messages.map((m: { role: string; content: string }) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
 
-    const response = await fetch(AI_GATEWAY_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          generationConfig: {
+            maxOutputTokens: 1024,
+            temperature: 0.7,
+          },
+        }),
       },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: apiMessages,
-        max_tokens: 1024,
-        temperature: 0.7,
-      }),
-    });
+    );
 
     if (!response.ok) {
       if (response.status === 429) {
@@ -49,19 +46,13 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       const errText = await response.text();
-      console.error("AI Gateway error:", response.status, errText);
-      throw new Error(`AI Gateway error (${response.status})`);
+      console.error("Gemini API error:", response.status, errText);
+      throw new Error(`Gemini API error (${response.status})`);
     }
 
     const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "No response generated.";
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response generated.";
 
     return new Response(JSON.stringify({ text }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

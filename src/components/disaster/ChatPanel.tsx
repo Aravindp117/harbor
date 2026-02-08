@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, X, MapPin, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
 
 /* ── Shared types ─────────────────────────────────────────────────── */
 
@@ -31,23 +30,41 @@ interface Message {
   content: string;
 }
 
-/* ── AI chat via edge function ─────────────────────────────────────── */
+/* ── AI chat via Gemini API ────────────────────────────────────────── */
+
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 async function callAI(systemPrompt: string, messages: Message[]): Promise<string> {
-  const { data, error } = await supabase.functions.invoke('chat-ai', {
-    body: { systemPrompt, messages },
-  });
-
-  if (error) {
-    console.error('Chat AI error', error);
-    throw new Error('Chat AI error');
+  if (!GEMINI_API_KEY) {
+    throw new Error('Gemini API key not configured');
   }
 
-  if (data?.error) {
-    throw new Error(data.error);
+  const contents = messages.map((m) => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }));
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: { maxOutputTokens: 1024, temperature: 0.7 },
+      }),
+    },
+  );
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error('Gemini API error:', res.status, errText);
+    throw new Error(`Gemini API error (${res.status})`);
   }
 
-  return data?.text || 'No response generated.';
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
 }
 
 /* ── System prompt (includes map-control tool protocol) ───────────── */

@@ -6,7 +6,7 @@ Production backend for **Harbor** — a disaster safety platform providing real-
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Lovable Frontend                          │
+│                    Harbor Frontend                            │
 │   Home • Map+Chat • Aid & Resources • News                  │
 └────────────────────────┬────────────────────────────────────┘
                          │ REST JSON
