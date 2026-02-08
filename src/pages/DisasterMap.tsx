@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useJsApiLoader, GoogleMap } from '@react-google-maps/api';
 import { cn } from '@/lib/utils';
 import { fetchEonet, fetchEarthquakes, fetchEventNews } from '@/lib/disasterApi';
+import { GOOGLE_MAPS_API_KEY } from '@/config/maps';
 
 const mapContainerStyle = {
   width: '100%',
@@ -378,9 +379,8 @@ export default function DisasterMap() {
     }
   }, []);
 
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: apiKey || '',
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
 
   const fetchData = useCallback(() => {
@@ -481,9 +481,7 @@ export default function DisasterMap() {
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
           <p className="font-medium text-destructive">Failed to load Google Maps</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            {!apiKey
-              ? 'Add your Google Maps API key to .env as VITE_GOOGLE_MAPS_API_KEY'
-              : 'Check your API key and ensure Maps JavaScript API is enabled.'}
+            Check your API key configuration and ensure Maps JavaScript API is enabled.
           </p>
         </div>
       </div>
