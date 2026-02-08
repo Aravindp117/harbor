@@ -37,12 +37,12 @@ export function LiveAlertsBanner() {
       setLoading(true);
       setError(false);
       const data = await fetchAlertsAPI();
-      const items: AlertItem[] = (data.alerts || []).map((a: AlertItem) => ({
-        id: a.id,
-        alertText: a.alertText,
-        severity: a.severity,
-        category: a.category,
-        date: a.date,
+      const items: AlertItem[] = (data.alerts || []).map((a: Record<string, unknown>) => ({
+        id: a.id as string,
+        alertText: a.alertText as string,
+        severity: (a.severity as AlertItem['severity']) || 'medium',
+        category: a.category as string,
+        date: a.date as string,
       }));
       setAlerts(items);
       setIndex(0);

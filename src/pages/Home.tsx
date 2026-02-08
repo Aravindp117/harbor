@@ -19,9 +19,6 @@ const SIDEBAR_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/map', label: 'Disaster Map' },
   { to: '/news', label: 'Disaster News' },
-  { to: '/trends', label: 'Trends' },
-  { to: '/resources', label: 'Aid Resources' },
-  { to: '/about', label: 'Our Mission' },
 ];
 
 const VIDEOS_PER_HEADLINE = 2;
@@ -161,7 +158,7 @@ export default function Home() {
                             href={item.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`block h-52 border border-white/15 backdrop-blur-sm flex flex-col justify-end p-6 transition-colors cursor-pointer group ${
+                            className={`block h-52 border border-white/15 backdrop-blur-sm flex flex-col justify-end p-6 transition-colors cursor-pointer group overflow-hidden ${
                               offset === 0
                                 ? 'bg-white/10 hover:bg-white/15'
                                 : 'bg-white/5 pointer-events-none'

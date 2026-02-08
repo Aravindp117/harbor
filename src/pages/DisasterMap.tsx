@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import harborLogo from '@/assets/harbor-logo.png';
 import { fetchEonet, fetchEarthquakes, fetchEventNews } from '@/lib/disasterApi';
 import ChatPanel, { type MapContext, type ToolCommand, type EventSummary } from '@/components/disaster/ChatPanel';
 
@@ -716,6 +717,11 @@ export default function DisasterMap() {
               ))}
             </div>
           )}
+        </div>
+        <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2 px-3 py-2 rounded bg-card/90 backdrop-blur-md border border-border">
+          <img src={harborLogo} alt="Harbor" className="h-5 w-5 object-contain" />
+          <span className="font-heading text-xs font-semibold text-foreground">Harbor</span>
+          <span className="text-[10px] text-muted-foreground">— Interactive Disaster Map</span>
         </div>
         <div className="absolute top-14 left-4 z-[1000] px-3 py-2 rounded bg-card/90 backdrop-blur-md border border-border text-xs text-muted-foreground max-w-xs">
           {mapMode === 'current'

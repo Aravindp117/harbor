@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Navbar } from './components/disaster/Navbar';
 import { Footer } from './components/disaster/Footer';
 import { cn } from './lib/utils';
@@ -13,6 +14,11 @@ import NotFound from './pages/NotFound';
 export default function App() {
   const location = useLocation();
   const isHome = location.pathname === '/';
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
