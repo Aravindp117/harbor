@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 import { fetchEonet, fetchEarthquakes, fetchEventNews } from '@/lib/disasterApi';
 import ChatPanel, { type MapContext, type ToolCommand, type EventSummary } from '@/components/disaster/ChatPanel';
 
@@ -453,17 +454,9 @@ export default function DisasterMap() {
       /* Fetch Mapbox token from backend */
       let token: string | null = null;
       try {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-        const res = await fetch(`${supabaseUrl}/functions/v1/mapbox-token`, {
-          headers: {
-            'Authorization': `Bearer ${supabaseKey}`,
-            'apikey': supabaseKey,
-          },
-        });
-        if (!res.ok) throw new Error('Failed to fetch Mapbox token');
-        const data = await res.json();
-        token = data.token;
+        const { data, error } = await supabase.functions.invoke('mapbox-token');
+        if (error) throw error;
+        token = data?.token;
       } catch (e) {
         console.error('Mapbox token fetch error:', e);
         if (!cancelled) setMapError('Failed to load Mapbox token from backend.');

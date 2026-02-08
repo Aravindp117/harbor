@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, X, MapPin, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 /* ── Shared types ─────────────────────────────────────────────────── */
 
@@ -33,28 +34,20 @@ interface Message {
 /* ── AI chat via edge function ─────────────────────────────────────── */
 
 async function callAI(systemPrompt: string, messages: Message[]): Promise<string> {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  if (!supabaseUrl || !supabaseKey) return 'Backend not configured.';
-
-  const res = await fetch(`${supabaseUrl}/functions/v1/chat-ai`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${supabaseKey}`,
-      'apikey': supabaseKey,
-    },
-    body: JSON.stringify({ systemPrompt, messages }),
+  const { data, error } = await supabase.functions.invoke('chat-ai', {
+    body: { systemPrompt, messages },
   });
 
-  if (!res.ok) {
-    const errText = await res.text();
-    console.error('Chat AI error', res.status, errText);
-    throw new Error(`Chat AI error (${res.status})`);
+  if (error) {
+    console.error('Chat AI error', error);
+    throw new Error('Chat AI error');
   }
 
-  const data = await res.json();
-  return data.text || 'No response generated.';
+  if (data?.error) {
+    throw new Error(data.error);
+  }
+
+  return data?.text || 'No response generated.';
 }
 
 /* ── System prompt (includes map-control tool protocol) ───────────── */
