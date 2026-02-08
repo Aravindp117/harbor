@@ -229,14 +229,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Menu trigger — top right */}
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className="fixed top-5 right-6 z-30 p-2 text-white/60 hover:text-white transition-colors"
-        aria-label="Open menu"
+      {/* Menu trigger — top right, hover to open */}
+      <div
+        className="fixed top-4 right-6 z-[60]"
+        onMouseEnter={() => setSidebarOpen(true)}
       >
-        <Menu className="h-6 w-6" />
-      </button>
+        <div className="p-2 text-white/60 hover:text-white transition-colors cursor-pointer">
+          <Menu className="h-6 w-6" />
+        </div>
+      </div>
 
       {/* Sidebar overlay + panel */}
       <AnimatePresence>
